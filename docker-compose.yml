@@ -2,19 +2,34 @@ version: '3.1'
 services:
 
   mongodb:
-    image: mongo
-    container_name: mongodb
+      build:
+        context: .
+        dockerfile: Dockerfile
+      container_name: mongodb
+      restart: always
+      ports:
+        - 27018:27017
+      volumes:
+        - ./mongodb_data:/data/db
+      environment:
+        - MONGO_INITDB_ROOT_USERNAME=root
+        - MONGO_INITDB_ROOT_PASSWORD=password
+      expose:
+        - 27018
+      command: --quiet
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
     restart: always
     ports:
-      - 27018:27017
+      - "5672:5672"  # AMQP port
+      - "15672:15672"  # RabbitMQ Management UI port
     volumes:
-      - ./mongodb_data:/data/db
+      - ./rabbitmq_data:/var/lib/rabbitmq
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=password
-    expose:
-      - 27018
-    command: --quiet
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
 
   # mongo-express:
   #   image: mongo-express
@@ -59,17 +74,17 @@ services:
   #   ports:
   #     - "5050:80"
 
-  postgres:
-    image: postgres:15
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: test_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./postgres_data:/var/lib/postgresql/data
+  # postgres:
+  #   image: postgres:15
+  #   restart: always
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: password
+  #     POSTGRES_DB: test_db
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - ./postgres_data:/var/lib/postgresql/data
 
   # redis:
   #   image: redis
