@@ -1,35 +1,35 @@
 version: '3.1'
 services:
 
-  mongodb:
-      build:
-        context: .
-        dockerfile: Dockerfile
-      container_name: mongodb
-      restart: always
-      ports:
-        - 27018:27017
-      volumes:
-        - ./mongodb_data:/data/db
-      environment:
-        - MONGO_INITDB_ROOT_USERNAME=root
-        - MONGO_INITDB_ROOT_PASSWORD=password
-      expose:
-        - 27018
-      command: --quiet
+  # mongodb:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: mongodb
+  #   restart: always
+  #   ports:
+  #     - 27018:27017
+  #   volumes:
+  #     - ./mongodb_data:/data/db
+  #   environment:
+  #     - MONGO_INITDB_ROOT_USERNAME=root
+  #     - MONGO_INITDB_ROOT_PASSWORD=password
+  #   expose:
+  #     - 27018
+  #   command: --quiet
 
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq
-    restart: always
-    ports:
-      - "5672:5672"  # AMQP port
-      - "15672:15672"  # RabbitMQ Management UI port
-    volumes:
-      - ./rabbitmq_data:/var/lib/rabbitmq
-    environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
+  # rabbitmq:
+  #   image: rabbitmq:3-management
+  #   container_name: rabbitmq
+  #   restart: always
+  #   ports:
+  #     - "5672:5672"  # AMQP port
+  #     - "15672:15672"  # RabbitMQ Management UI port
+  #   volumes:
+  #     - ./rabbitmq_data:/var/lib/rabbitmq
+  #   environment:
+  #     - RABBITMQ_DEFAULT_USER=guest
+  #     - RABBITMQ_DEFAULT_PASS=guest
 
   # mongo-express:
   #   image: mongo-express
@@ -93,7 +93,7 @@ services:
   #     - "6379:6379"
   #   environment:
   #     - REDIS_PASSWORD=password
-  
+
   # redis-insight:
   #   image: redislabs/redisinsight
   #   container_name: redis-insight
@@ -138,7 +138,21 @@ services:
   #   expose:
   #     - "21"
   #     - "50000-50010"
-      
+
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: test_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpassword
+    ports:
+      - "3307:3306"  # MariaDB default port
+    volumes:
+      - ./mariadb_data:/var/lib/mysql
+
 networks:
   default:
     name: mongodb_network
