@@ -1,30 +1,30 @@
-version: '3.8'
-
+version: '3.1'
 services:
-  mongodb:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: mongodb
-    restart: always
-    ports:
-      - 27018:27017
-    volumes:
-      - ./mongodb_data:/data/db
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=password
-    expose:
-      - 27018
-    command: --quiet
+
+  # mongodb:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: mongodb
+  #   restart: always
+  #   ports:
+  #     - 27018:27017
+  #   volumes:
+  #     - ./mongodb_data:/data/db
+  #   environment:
+  #     - MONGO_INITDB_ROOT_USERNAME=root
+  #     - MONGO_INITDB_ROOT_PASSWORD=password
+  #   expose:
+  #     - 27018
+  #   command: --quiet
 
   # rabbitmq:
   #   image: rabbitmq:3-management
   #   container_name: rabbitmq
   #   restart: always
   #   ports:
-  #     - "5672:5672"      # AMQP port
-  #     - "15672:15672"    # RabbitMQ Management UI port
+  #     - "5672:5672"  # AMQP port
+  #     - "15672:15672"  # RabbitMQ Management UI port
   #   volumes:
   #     - ./rabbitmq_data:/var/lib/rabbitmq
   #   environment:
@@ -43,8 +43,6 @@ services:
   #     - ME_CONFIG_MONGODB_SERVER=mongodb:27018
   #     - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
   #   command: sh -c 'apk update && apk add mongodb-tools && node app'
-  #   depends_on:
-  #     - mongodb
 
   # mysqldb:
   #   image: mysql
@@ -66,8 +64,6 @@ services:
   #     PMA_PASSWORD: password
   #   ports:
   #     - "8080:80"
-  #   depends_on:
-  #     - mysqldb
 
   # pgadmin:
   #   image: dpage/pgadmin4
@@ -89,6 +85,23 @@ services:
   #     - "5432:5432"
   #   volumes:
   #     - ./postgres_data:/var/lib/postgresql/data
+
+  # redis:
+  #   image: redis
+  #   restart: always
+  #   ports:
+  #     - "6379:6379"
+  #   environment:
+  #     - REDIS_PASSWORD=password
+
+  # redis-insight:
+  #   image: redislabs/redisinsight
+  #   container_name: redis-insight
+  #   restart: always
+  #   ports:
+  #     - "8001:8001"
+  #   environment:
+  #     - REDISINSIGHT_REDIS_HOSTS=redis:6379
 
   # php-apache-environment:
   #   container_name: php-apache
@@ -113,12 +126,12 @@ services:
   #   container_name: filezilla-server
   #   restart: always
   #   ports:
-  #     - "21:21"               # FTP control port
-  #     - "50000-50010:50000-50010" # Passive mode port range
+  #     - "21:21"  # FTP control port
+  #     - "50000-50010:50000-50010"  # Passive mode port range
   #   volumes:
   #     - ./filezilla_data:/config
   #   environment:
-  #     - TZ=Asia/Kolkata       # Set timezone
+  #     - TZ=Asia/Kolkata  # Set the timezone to Asia/Kolkata
   #     - FTP_USER=username
   #     - FTP_PASS=password
   #     - PASV_ADDRESS=localhost
@@ -126,45 +139,20 @@ services:
   #     - "21"
   #     - "50000-50010"
 
-  # mariadb:
-  #   image: mariadb:latest
-  #   container_name: mariadb
-  #   restart: always
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: password
-  #     MYSQL_DATABASE: test_db
-  #     MYSQL_USER: user
-  #     MYSQL_PASSWORD: userpassword
-  #   ports:
-  #     - "3307:3306"
-  #   volumes:
-  #     - ./mariadb_data:/var/lib/mysql
-
-  redis:
-    image: redis:latest
-    container_name: some-redis
-    restart: unless-stopped
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: test_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpassword
     ports:
-      - "6379:6379"
+      - "3307:3306"  # MariaDB default port
     volumes:
-      - redis-data:/data
-    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning", "--requirepass", "myStrongPassword123"]
-
-  redisinsight:
-    image: redis/redisinsight:latest
-    container_name: redisinsight
-    restart: unless-stopped
-    ports:
-      - "5540:5540"
-    volumes:
-      - redisinsight-data:/db
-    depends_on:
-      - redis
+      - ./mariadb_data:/var/lib/mysql
 
 networks:
   default:
     name: mongodb_network
-
-volumes:
-  redis-data:
-  redisinsight-data:

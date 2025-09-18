@@ -1,0 +1,1 @@
+<!-- redis://default:myStrongPassword123@some-redis:6379 -->
